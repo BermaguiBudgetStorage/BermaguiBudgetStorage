@@ -56,6 +56,16 @@
     ]
   }
   </script>
+  <script>
+    // set the theme before first paint so there's no flash of the wrong mode
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
   <style>
     /* Fonts: self-hosted variable fonts (Fontshare licence: free for commercial use) */
     @font-face {
@@ -87,10 +97,28 @@
       --ink: #1a1a18;         /* deep green-black text */
       --pine: #c0510a;        /* single accent: buttons, links, highlights */
       --pine-soft: #e06620;
-      --moss: #6b6b62;        /* muted text */
+      --moss: #5d5c53;        /* muted text */
       --tan: #d9c8a3;         /* container tan, neutral surface */
       --line: rgba(26,26,24,0.12);
+      --card: #fbfaf6;        /* card surfaces (pricing, reviews) */
       --radius: 2px;          /* sharp, like the containers */
+      /* the dark sections (hero, statement, fit, contact) keep these in both themes */
+      --band: #1a1a18;
+      --band-text: #f5f0e8;
+      color-scheme: light;
+    }
+    /* Dark mode: toggle in the nav, default follows the visitor's system. */
+    html[data-theme="dark"] {
+      --bone: #141412;
+      --bone-2: #1c1c19;
+      --ink: #ece7dd;
+      --pine: #e06620;
+      --pine-soft: #f08040;
+      --moss: #a5a296;
+      --line: rgba(236,231,221,0.14);
+      --card: #201f1c;
+      --band: #1e1d1a;
+      color-scheme: dark;
     }
 
     html { scroll-behavior: smooth; }
@@ -112,7 +140,7 @@
     header.nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: 68px;
-      background: rgba(245,240,232, 0.92);
+      background: color-mix(in srgb, var(--bone) 92%, transparent);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line);
     }
@@ -135,7 +163,7 @@
     .nav-links a:hover { opacity: 1; }
     .nav-phone {
       display: inline-block;
-      background: var(--pine); color: var(--bone); text-decoration: none;
+      background: var(--pine); color: var(--band-text); text-decoration: none;
       font-size: 0.92rem; font-weight: 600;
       padding: 0.6rem 1.25rem; border-radius: var(--radius);
       transition: background 0.2s, transform 0.15s;
@@ -149,6 +177,17 @@
       transition: transform 0.25s ease, opacity 0.2s ease;
     }
     .nav-burger span + span { margin-top: 5px; }
+    /* dark / light switch */
+    .theme-btn {
+      background: none; border: 1px solid var(--line); border-radius: 50%;
+      width: 34px; height: 34px; flex-shrink: 0; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--ink); opacity: 0.75; transition: opacity 0.2s, border-color 0.2s;
+    }
+    .theme-btn:hover { opacity: 1; border-color: var(--moss); }
+    .theme-btn svg { display: block; }
+    html[data-theme="dark"] .theme-btn .icon-moon { display: none; }
+    html:not([data-theme="dark"]) .theme-btn .icon-sun { display: none; }
 
     /* ---------- HERO 3D STAGE (cinematic) ---------- */
     /* Tall stage; the sticky child stays pinned while we scrub the camera. */
@@ -186,7 +225,7 @@
     }
     .chapter h2 {
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
-      font-size: clamp(2.2rem, 5.2vw, 4.4rem); line-height: 1.0; letter-spacing: -0.025em;
+      font-size: clamp(2.2rem, 5.2vw, 4.4rem); line-height: 1.06; letter-spacing: -0.025em;
       color: #fff; margin-bottom: 0.9rem; text-shadow: 0 2px 30px rgba(0,0,0,0.55);
     }
     .chapter p {
@@ -202,8 +241,8 @@
     .hero-copy { max-width: 30rem; pointer-events: auto; }
     .hero-copy h1 {
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
-      font-size: clamp(2.6rem, 5.2vw, 4.4rem); line-height: 1.02;
-      letter-spacing: -0.02em; margin-bottom: 1.4rem; color: var(--bone);
+      font-size: clamp(2.6rem, 5.2vw, 4.4rem); line-height: 1.06;
+      letter-spacing: -0.02em; margin-bottom: 1.4rem; color: var(--band-text);
     }
     .hero-copy h1 b { color: var(--pine-soft); font-weight: 800; }
     .hero-sub {
@@ -217,11 +256,11 @@
       transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
     }
     .btn:active { transform: scale(0.98); }
-    .btn-solid { background: var(--pine); color: var(--bone); }
+    .btn-solid { background: var(--pine); color: var(--band-text); }
     .btn-solid:hover { background: var(--pine-soft); transform: translateY(-1px); }
     .btn-line { border: 1.5px solid var(--line); color: var(--ink); }
     .btn-line:hover { border-color: var(--pine); color: var(--pine); transform: translateY(-1px); }
-    .btn-line-light { border: 1.5px solid rgba(245,240,232,0.4); color: var(--bone); }
+    .btn-line-light { border: 1.5px solid rgba(245,240,232,0.4); color: var(--band-text); }
     .btn-line-light:hover { border-color: var(--pine-soft); color: var(--pine-soft); transform: translateY(-1px); }
     .hero-hint {
       margin-top: 1.8rem; font-size: 0.82rem; letter-spacing: 0.04em;
@@ -232,7 +271,7 @@
       position: absolute; right: 4vw; top: 50%; transform: translateY(-50%);
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
       font-size: clamp(2rem, 6vw, 5rem); line-height: 1; letter-spacing: -0.02em;
-      color: var(--bone); opacity: 0; text-align: right; max-width: 42%;
+      color: var(--band-text); opacity: 0; text-align: right; max-width: 42%;
       pointer-events: none;
     }
     .hero-stageword small { display: block; font-size: 0.34em; font-weight: 500;
@@ -251,7 +290,7 @@
 
     /* ---------- STATEMENT BAND (dark bridge out of the hero) ---------- */
     .statement {
-      background: var(--ink); color: var(--bone);
+      background: var(--band); color: var(--band-text);
       padding: 7rem 24px; text-align: center;
     }
     .statement .inner { max-width: 1000px; margin: 0 auto; }
@@ -261,9 +300,9 @@
     }
     .statement h2 {
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
-      font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.06; letter-spacing: -0.025em;
+      font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.14; letter-spacing: -0.025em;
     }
-    .statement h2 .dim { color: rgba(245,240,232,0.4); }
+    .statement h2 .dim { color: rgba(245,240,232,0.58); }
 
     /* ---------- TRUST STRIP ---------- */
     .trust {
@@ -293,7 +332,7 @@
     }
     .sec-head h2 {
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
-      font-size: clamp(2.1rem, 4.4vw, 3.4rem); letter-spacing: -0.025em; line-height: 1.05;
+      font-size: clamp(2.1rem, 4.4vw, 3.4rem); letter-spacing: -0.025em; line-height: 1.12;
       margin-bottom: 1rem;
     }
     .sec-head p { color: var(--moss); font-size: 1.12rem; line-height: 1.6; margin: 0 auto; }
@@ -305,7 +344,7 @@
       align-items: stretch;
     }
     .price-card {
-      position: relative; background: #fbfaf6; border: 1px solid var(--line);
+      position: relative; background: var(--card); border: 1px solid var(--line);
       border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
       transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, border-color 0.3s;
     }
@@ -313,7 +352,7 @@
     .price-card.featured { border-color: var(--pine); }
     .price-tag {
       position: absolute; top: 1rem; right: 1rem; z-index: 2;
-      background: var(--pine); color: var(--bone); font-size: 0.72rem; font-weight: 600;
+      background: var(--pine); color: var(--band-text); font-size: 0.72rem; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.7rem; border-radius: 2px;
     }
     .price-photo { aspect-ratio: 16 / 10; overflow: hidden; background: var(--tan); }
@@ -395,10 +434,10 @@
 
     /* ---------- CONTACT (single deliberate colour block) ---------- */
     #contact {
-      background: var(--ink); color: var(--bone);
+      background: var(--band); color: var(--band-text);
       margin-top: 6.5rem; padding: 6.5rem 0 0;
     }
-    #contact .sec-head h2 { color: var(--bone); }
+    #contact .sec-head h2 { color: var(--band-text); }
     #contact .sec-head p { color: rgba(245,240,232, 0.65); }
     .contact-grid {
       max-width: 1280px; margin: 0 auto; padding: 0 24px;
@@ -412,7 +451,7 @@
       background: rgba(245,240,232, 0.07);
       border: 1px solid rgba(245,240,232, 0.28);
       border-radius: var(--radius);
-      color: var(--bone); font-family: inherit; font-size: 0.98rem;
+      color: var(--band-text); font-family: inherit; font-size: 0.98rem;
       padding: 0.75rem 0.9rem; outline: none;
       transition: border-color 0.2s;
     }
@@ -421,7 +460,7 @@
     .fgroup select option { color: var(--ink); background: var(--bone); }
     .fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus { border-color: var(--tan); }
     .fgroup textarea { min-height: 110px; resize: vertical; }
-    .btn-tan { background: var(--tan); color: var(--ink); border: none; cursor: pointer;
+    .btn-tan { background: var(--tan); color: #1a1a18; border: none; cursor: pointer;
       font-family: inherit; }
     .btn-tan:hover { background: #e4d6b8; transform: translateY(-1px); }
 
@@ -431,7 +470,7 @@
     }
     .contact-aside .where a { color: var(--tan); text-decoration: none; }
     .contact-aside .where a:hover { text-decoration: underline; }
-    .contact-aside .where strong { color: var(--bone); display: block; margin-top: 0.9rem; }
+    .contact-aside .where strong { color: var(--band-text); display: block; margin-top: 0.9rem; }
     .map-box {
       border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(245,240,232, 0.2);
     }
@@ -445,8 +484,8 @@
     }
 
     /* ---------- MOTION ---------- */
-    .reveal { opacity: 0; transform: translateY(22px); }
-    .reveal.in { opacity: 1; transform: none; transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.in { animation: revealRise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes revealRise { from { opacity: 0; transform: translateY(22px); } }
 
     /* Owner's choice: the hero + reveals animate on every device, even when the
        OS "reduce motion" setting is on. (No prefers-reduced-motion gating here.) */
@@ -479,20 +518,20 @@
     }
     .avail-pill .dot {
       width: 9px; height: 9px; border-radius: 50%;
-      background: #6fbf73; box-shadow: 0 0 8px rgba(111,191,115,0.8);
+      background: #6fbf73; box-shadow: 0 0 5px rgba(111,191,115,0.5);
       animation: availGlow 2.2s ease-in-out infinite;
     }
-    .avail-pill.full .dot { background: #e0a33b; box-shadow: 0 0 8px rgba(224,163,59,0.8); }
+    .avail-pill.full .dot { background: #e0a33b; box-shadow: 0 0 5px rgba(224,163,59,0.5); }
     @keyframes availGlow { 50% { opacity: 0.55; } }
 
     /* ---------- WILL IT FIT ---------- */
-    #fit { background: var(--ink); color: var(--bone); }
-    #fit .sec-head h2 { color: var(--bone); }
+    #fit { background: var(--band); color: var(--band-text); }
+    #fit .sec-head h2 { color: var(--band-text); }
     #fit .sec-head p { color: rgba(245,240,232,0.65); }
     .fit-wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
     .fit-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1.6rem; }
     .fit-btn {
-      background: none; border: 1.5px solid rgba(245,240,232,0.3); color: var(--bone);
+      background: none; border: 1.5px solid rgba(245,240,232,0.3); color: var(--band-text);
       font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer;
       padding: 0.65rem 1.2rem; border-radius: 999px;
       transition: border-color 0.2s, background 0.2s, transform 0.15s;
@@ -525,7 +564,7 @@
     }
     .review-grid[hidden] { display: none; }
     .review {
-      background: #fbfaf6; border: 1px solid var(--line); border-radius: 10px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 10px;
       padding: 1.8rem; font-size: 1rem; line-height: 1.6;
     }
     .review .stars { color: var(--pine); letter-spacing: 0.12em; margin-bottom: 0.7rem; }
@@ -533,7 +572,7 @@
     .gbadge {
       max-width: 640px; margin: 0 auto; padding: 1.6rem 2rem;
       display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; justify-content: center;
-      background: #fbfaf6; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px;
     }
     .gbadge-score {
       font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800;
@@ -577,13 +616,14 @@
     @media (max-width: 920px) {
       .fit-stage { height: 320px; }
       .review-grid { grid-template-columns: 1fr; }
-      .nav-inner { gap: 0.8rem; }
+      .nav-inner { gap: 0.7rem; }
       .logo { margin-right: auto; }
+      .nav-phone { white-space: nowrap; padding: 0.55rem 0.85rem; font-size: 0.85rem; }
       .nav-burger { display: block; }
       .nav-links {
         position: fixed; top: 68px; left: 0; right: 0;
         flex-direction: column; gap: 0; padding: 0.4rem 0 0.6rem;
-        background: rgba(245,240,232, 0.98);
+        background: color-mix(in srgb, var(--bone) 98%, transparent);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--line);
         opacity: 0; transform: translateY(-10px); pointer-events: none;
@@ -623,6 +663,10 @@
         <li><a href="#faq">FAQ</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+      <button class="theme-btn" id="themeBtn" aria-label="Switch between dark and light mode">
+        <svg class="icon-moon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
       <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
@@ -958,7 +1002,7 @@
           txt.textContent = a.free + (a.free === 1 ? ' container' : ' containers') + ' free right now';
         } else {
           pill.classList.add('full');
-          txt.textContent = 'Currently full — enquire to join the waitlist';
+          txt.textContent = 'Currently full. Enquire to join the waitlist';
         }
         pill.hidden = false;
       }).catch(function () {});
@@ -1048,6 +1092,13 @@
         });
       });
     })();
+
+    // Dark mode switch (the head snippet already applied the saved theme).
+    document.getElementById('themeBtn').addEventListener('click', function () {
+      var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
 
     // Mobile nav: hamburger toggles the dropdown; any link tap closes it.
     (function () {
