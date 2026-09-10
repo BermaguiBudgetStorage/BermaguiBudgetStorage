@@ -926,8 +926,6 @@
     </div>
     <div class="contact-grid">
       <form class="cform reveal" action="https://formspree.io/f/myklgqww" method="POST">
-        <!-- Formspree bounces people back to our own thanks page, which is where the ad conversion fires -->
-        <input type="hidden" name="_next" value="https://bermaguibudgetstorage.com.au/thanks.html" />
         <div class="frow">
           <div class="fgroup">
             <label for="f-first">First name</label>
@@ -1123,6 +1121,42 @@
           document.body.classList.remove('nav-open');
           burger.setAttribute('aria-expanded', 'false');
         });
+      });
+    })();
+  </script>
+
+  <script>
+    // Post the enquiry ourselves instead of letting the browser navigate off to
+    // formspree.io. They ignore the _next field now (it's a dashboard setting), and
+    // their thanks page isn't ours to tag, so we land people on thanks.html instead.
+    (function () {
+      var form = document.querySelector('.cform');
+      if (!form || !window.fetch) return;
+      var btn = form.querySelector('button[type="submit"]');
+      var sending = false;
+
+      form.addEventListener('submit', function (e) {
+        if (sending) { e.preventDefault(); return; }
+        e.preventDefault();
+        sending = true;
+        var label = btn.textContent;
+        btn.textContent = 'Sending\u2026';
+        btn.disabled = true;
+
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+          .then(function () { window.location = 'thanks.html'; })
+          .catch(function () {
+            // never lose an enquiry over this, just let the browser do the normal post
+            sending = false;
+            btn.disabled = false;
+            btn.textContent = label;
+            form.submit();
+          });
       });
     })();
   </script>
