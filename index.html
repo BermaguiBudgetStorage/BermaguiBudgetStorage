@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18291870091"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18291870091');
+  </script>
   <title>Bermagui Budget Storage | Secure Container Storage, Bermagui NSW</title>
   <meta name="description" content="Drive-up shipping container storage in a gated compound at 5-7 Sherwood Road, Bermagui. Full 20ft $250/month, half $150/month. 24/7 access, CCTV. Call 0458 131 471." />
   <link rel="canonical" href="https://bermaguibudgetstorage.com.au/" />
@@ -918,6 +926,8 @@
     </div>
     <div class="contact-grid">
       <form class="cform reveal" action="https://formspree.io/f/myklgqww" method="POST">
+        <!-- Formspree bounces people back to our own thanks page, which is where the ad conversion fires -->
+        <input type="hidden" name="_next" value="https://bermaguibudgetstorage.com.au/thanks.html" />
         <div class="frow">
           <div class="fgroup">
             <label for="f-first">First name</label>
@@ -1124,5 +1134,6 @@
   <script src="hero3d.js?v=15" defer></script>
   <script src="fitviz.js?v=3" defer></script>
   <script src="chat-widget.js?v=3" defer></script>
+  <script src="analytics.js?v=1" defer></script>
 </body>
 </html>
