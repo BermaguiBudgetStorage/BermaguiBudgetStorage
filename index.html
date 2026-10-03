@@ -21,7 +21,9 @@
   <meta name="theme-color" content="#f5f0e8" />
   <meta property="og:title" content="Bermagui Budget Storage" />
   <meta property="og:description" content="Secure shipping container storage in Bermagui NSW. From $150 a month with 24/7 access." />
-  <meta property="og:image" content="https://bermaguibudgetstorage.com.au/static/container7.jpg" />
+  <meta property="og:image" content="https://bermaguibudgetstorage.com.au/static/og-yard.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://bermaguibudgetstorage.com.au/" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -54,9 +56,9 @@
       { "@type": "Question", "name": "Can I get to my container any time?",
         "acceptedAnswer": { "@type": "Answer", "text": "Yes. You have 24/7 access through the keypad gate. There are no lights on site, so bring a torch if you're coming after dark." } },
       { "@type": "Question", "name": "What can I store?",
-        "acceptedAnswer": { "@type": "Answer", "text": "General household and business goods: furniture, tools, boxes, bikes, trailers and most vehicles. No hazardous, perishable or illegal goods." } },
+        "acceptedAnswer": { "@type": "Answer", "text": "General household and business goods: furniture, tools, boxes, bikes, trailers and most vehicles. No hazardous, perishable or illegal goods. High-value or sentimental items aren't recommended as insurance isn't included." } },
       { "@type": "Question", "name": "How do payments work?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Always in advance, by bank transfer or cash. One month upfront to start, then fortnightly or monthly. You're welcome to pay as far ahead as you like." } },
+        "acceptedAnswer": { "@type": "Answer", "text": "Always in advance, by bank transfer or cash. One month upfront to start, then fortnightly or monthly, whatever suits. You're welcome to pay as far ahead as you like." } },
       { "@type": "Question", "name": "How much notice do I give when moving out?",
         "acceptedAnswer": { "@type": "Answer", "text": "14 days. If we're full at the time, we keep a waitlist for the next person, so the more notice the better." } },
       { "@type": "Question", "name": "Is my stuff insured?",
@@ -392,6 +394,7 @@
       display: flex; gap: 1rem; overflow-x: auto; padding: 0 24px 1.5rem;
       max-width: 1280px; margin: 0 auto;
       scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      scroll-padding-inline: 24px;   /* snap to the padded edge, not the screen edge */
       scrollbar-width: thin;
     }
     .gallery figure {
@@ -484,7 +487,7 @@
     }
     .map-box iframe { display: block; width: 100%; height: 300px; border: 0; }
 
-    footer {
+    #contact > footer {
       max-width: 1280px; margin: 4.5rem auto 0; padding: 1.6rem 24px;
       border-top: 1px solid rgba(245,240,232, 0.16);
       display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem;
@@ -634,10 +637,10 @@
         background: color-mix(in srgb, var(--bone) 98%, transparent);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--line);
-        opacity: 0; transform: translateY(-10px); pointer-events: none;
-        transition: opacity 0.25s ease, transform 0.25s ease;
+        opacity: 0; transform: translateY(-10px); pointer-events: none; visibility: hidden;
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
       }
-      .nav-open .nav-links { opacity: 1; transform: none; pointer-events: auto; }
+      .nav-open .nav-links { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition-delay: 0s; }
       .nav-links a { display: block; padding: 0.85rem 24px; font-size: 1rem; opacity: 1; }
       .nav-open .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
       .nav-open .nav-burger span:nth-child(2) { opacity: 0; }
@@ -688,7 +691,7 @@
     <div id="heroSticky">
       <canvas id="heroCanvas"></canvas>
       <!-- Static fallback for no-WebGL -->
-      <img id="heroFallback" src="static/container7.jpg" alt="Storage containers at Bermagui Budget Storage" />
+      <img id="heroFallback" src="static/yard-wide.jpg" alt="A row of storage containers at the Bermagui yard" />
       <div class="hero-vignette" aria-hidden="true"></div>
 
       <div class="hero-overlay">
@@ -759,7 +762,7 @@
     <div class="price-grid">
       <div class="price-card featured reveal">
         <div class="price-tag">Best value</div>
-        <div class="price-photo"><img src="static/container5.jpg" alt="Inside a full 20ft storage container" loading="lazy" /></div>
+        <div class="price-photo"><img src="static/container-doors.jpg" alt="Full 20ft storage containers with lockable double doors" loading="lazy" /></div>
         <div class="price-body">
           <div class="price-name">Full 20ft container</div>
           <div class="price-amount">$<span class="count" data-count="250">250</span> <small>/ month</small></div>
@@ -768,7 +771,7 @@
         </div>
       </div>
       <div class="price-card reveal">
-        <div class="price-photo"><img src="static/273046354_105404948728193_6834059163946636715_n.jpg" alt="Half container storage unit with doors open" loading="lazy" /></div>
+        <div class="price-photo"><img src="static/container-inside.jpg" alt="Inside a clean, empty half container with the doors open" loading="lazy" /></div>
         <div class="price-body">
           <div class="price-name">Half 20ft container</div>
           <div class="price-amount">$<span class="count" data-count="150">150</span> <small>/ month</small></div>
@@ -789,7 +792,7 @@
     </div>
     <div class="fit-wrap reveal">
       <div class="fit-controls" role="group" aria-label="Choose what to store">
-        <button class="fit-btn" data-fit="home">2&ndash;3 bedroom home</button>
+        <button class="fit-btn" data-fit="home">2-3 bedroom home</button>
         <button class="fit-btn" data-fit="flat">1 bedroom flat</button>
         <button class="fit-btn" data-fit="car">A car</button>
         <button class="fit-btn" data-fit="boat">Boat on trailer</button>
@@ -823,17 +826,17 @@
       <blockquote class="review reveal">
         <div class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         REPLACE WITH REAL QUOTE
-        <footer>&mdash; Name, Bermagui</footer>
+        <footer>Name, Bermagui</footer>
       </blockquote>
       <blockquote class="review reveal">
         <div class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         REPLACE WITH REAL QUOTE
-        <footer>&mdash; Name, Bermagui</footer>
+        <footer>Name, Bermagui</footer>
       </blockquote>
       <blockquote class="review reveal">
         <div class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         REPLACE WITH REAL QUOTE
-        <footer>&mdash; Name, Bermagui</footer>
+        <footer>Name, Bermagui</footer>
       </blockquote>
     </div>
   </section>
@@ -845,14 +848,18 @@
       <h2>A simple, solid setup.</h2>
       <p>Clean containers on a fenced and gated yard in the Bermagui Industrial Estate. Plenty of room to back a trailer right up to your door.</p>
     </div>
-    <div class="gallery reveal">
+    <div class="gallery reveal" tabindex="0" role="region" aria-label="Photos of the facility">
       <figure>
-        <img src="static/container7.jpg" alt="Row of containers at the Bermagui yard" loading="lazy" />
+        <img src="static/yard-row.jpg" alt="Row of containers on the gravel yard at Bermagui" loading="lazy" />
         <figcaption>The yard on Sherwood Road.</figcaption>
       </figure>
       <figure>
-        <img src="static/container3.jpg" alt="Clean empty container interior" loading="lazy" />
-        <figcaption>Clean and dry inside, with a solid steel floor frame.</figcaption>
+        <img src="static/container-inside.jpg" alt="Clean empty container interior" loading="lazy" />
+        <figcaption>Clean and dry inside.</figcaption>
+      </figure>
+      <figure>
+        <img src="static/container-doors.jpg" alt="Containers with lockable double doors" loading="lazy" />
+        <figcaption>Your own doors and your own padlock.</figcaption>
       </figure>
       <figure>
         <img src="static/272991342_105404958728192_7731876452450793847_n.jpg" alt="Trailer parked beside an open container" loading="lazy" />
@@ -1165,9 +1172,9 @@
   <script src="vendor/three.min.js?v=2" defer></script>
   <script src="vendor/gsap.min.js?v=2" defer></script>
   <script src="vendor/ScrollTrigger.min.js?v=2" defer></script>
-  <script src="hero3d.js?v=15" defer></script>
-  <script src="fitviz.js?v=3" defer></script>
-  <script src="chat-widget.js?v=3" defer></script>
+  <script src="hero3d.js?v=16" defer></script>
+  <script src="fitviz.js?v=4" defer></script>
+  <script src="chat-widget.js?v=4" defer></script>
   <script src="analytics.js?v=1" defer></script>
 </body>
 </html>

@@ -18,12 +18,12 @@
   #bbsChatBox{position:fixed;bottom:92px;right:22px;z-index:9999;width:350px;max-width:92vw;
     display:none;flex-direction:column;background:#f5f0e8;border:1px solid rgba(26,26,24,.14);
     border-radius:2px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.3);
-    font-family:'Satoshi',system-ui,Arial,sans-serif;}
+    font-family:'Satoshi',system-ui,Arial,sans-serif;max-height:calc(100vh - 110px);}
   #bbsChatHead{background:#1a1a18;color:#fff;padding:13px 16px;display:flex;align-items:center;
     justify-content:space-between;font-size:15px;font-weight:500;}
   #bbsChatHead small{display:block;color:#c9c4bb;font-size:11px;font-weight:300;}
   #bbsChatClose{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;}
-  #bbsChatLog{height:330px;overflow-y:auto;padding:14px;background:#f5f0e8;}
+  #bbsChatLog{height:330px;min-height:120px;flex:1 1 auto;overflow-y:auto;padding:14px;background:#f5f0e8;}
   .bbsMsg{margin-bottom:10px;padding:9px 13px;border-radius:2px;max-width:85%;font-size:14px;
     line-height:1.4;white-space:pre-wrap;word-wrap:break-word;}
   .bbsMsg.user{background:#c0510a;color:#fff;margin-left:auto;}
@@ -43,6 +43,7 @@
   #bbsChatSend{border:none;background:#c0510a;color:#fff;border-radius:2px;padding:0 15px;
     font-size:15px;cursor:pointer;}
   #bbsChatSend:hover{background:#e06620;}
+  #bbsChatSend:disabled{opacity:.5;cursor:default;}
   `;
   var style = document.createElement("style");
   style.textContent = css;
@@ -57,14 +58,16 @@
     '<button id="bbsChatClose" aria-label="Close">&times;</button></div>' +
     '<div id="bbsChatLog"></div>' +
     '<form id="bbsChatForm"><input id="bbsChatInput" autocomplete="off" ' +
-    'placeholder="Type your question…" required><button id="bbsChatSend" type="submit">➤</button></form>';
+    'placeholder="Type your question…" required><button id="bbsChatSend" type="submit" aria-label="Send">➤</button></form>';
   document.body.appendChild(btn);
   document.body.appendChild(box);
 
   var log = box.querySelector("#bbsChatLog");
   var form = box.querySelector("#bbsChatForm");
   var input = box.querySelector("#bbsChatInput");
+  var send = box.querySelector("#bbsChatSend");
   var history = [];
+  var busy = false;
 
   function el(tag, props) {
     var e = document.createElement(tag);
@@ -94,7 +97,9 @@
   form.onsubmit = async function (e) {
     e.preventDefault();
     var text = input.value.trim();
-    if (!text) return;
+    // a second question mid-reply used to interleave two answers in one bubble
+    if (!text || busy) return;
+    busy = true; send.disabled = true;
     add("user", text);
     history.push({ role: "user", content: text });
     input.value = "";
@@ -122,15 +127,20 @@
         thinking.textContent = full;
         log.scrollTop = log.scrollHeight;
       }
+      full += decoder.decode();
+      if (started) thinking.textContent = full;
       if (full.trim()) {
         history.push({ role: "assistant", content: full });
       } else {
+        history.pop();   // no answer, so don't resend it as an unanswered turn
         thinking.classList.remove("typing");
         thinking.textContent = "Sorry, please try again.";
       }
     } catch (_) {
+      history.pop();
       thinking.classList.remove("typing");
       thinking.textContent = "Sorry, something went wrong. Please call us on " + PHONE + ".";
     }
+    busy = false; send.disabled = false;
   };
 })();

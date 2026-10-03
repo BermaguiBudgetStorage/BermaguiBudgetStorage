@@ -194,6 +194,11 @@
     canvas.addEventListener("pointerup", up);
     canvas.addEventListener("pointercancel", up);
 
+    // stop rendering once it's scrolled away, no point spinning a box nobody can see
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (en) { onScreen = en[0].isIntersecting; }).observe(stage);
+    }
+
     resize();
     window.addEventListener("resize", resize);
     tick();
@@ -206,8 +211,9 @@
     camera.aspect = w / h; camera.updateProjectionMatrix();
   }
 
-  var _n = new T.Vector3();
+  var _n = new T.Vector3(), onScreen = true;
   function tick() {
+    if (!onScreen || document.hidden) { requestAnimationFrame(tick); return; }
     spinVel *= 0.93;
     if (!dragging) spin += spinVel + (autoSpin ? 0.0022 : 0);
     root.rotation.y = spin;
@@ -320,7 +326,7 @@
   // ---------- presets ----------
   var PRESETS = {
     home: {
-      verdict: "A 2–3 bedroom home fits the full 20ft — with room to walk in.",
+      verdict: "A 2-3 bedroom home fits the full 20ft, with room to walk in.",
       tag: "Full 20ft · $250/mo", half: false,
       build: function (g) {
         g.add(boxRow(4, -2.55, -0.72, cardboardA, cardboardB));
@@ -332,7 +338,7 @@
       }
     },
     flat: {
-      verdict: "A one-bedder's worth — the half container is plenty.",
+      verdict: "A one-bedder's worth. The half container is plenty.",
       tag: "Half 20ft · $150/mo", half: true,
       build: function (g) {
         g.add(boxRow(3, -2.55, -0.65, cardboardA, cardboardB));
@@ -342,7 +348,7 @@
       }
     },
     car: {
-      verdict: "A car drives straight in — about 1.5 m spare in a full 20ft.",
+      verdict: "A car drives straight in, with about 1.5 m spare in a full 20ft.",
       tag: "Full 20ft · $250/mo", half: false,
       build: function (g) { g.add(car(-0.55)); }
     },
@@ -352,7 +358,7 @@
       build: function (g) { g.add(boat(0)); }
     },
     tools: {
-      verdict: "Shelves, chest and gear — a half container makes a solid lockup.",
+      verdict: "Shelves, chest and gear. A half container makes a solid lockup.",
       tag: "Half 20ft · $150/mo", half: true,
       build: function (g) {
         g.add(shelves(-2.3, 0));
@@ -365,7 +371,12 @@
   function setPreset(name) {
     var p = PRESETS[name];
     if (!p || !items) return;
-    while (items.children.length) items.remove(items.children[0]);
+    while (items.children.length) {
+      var old = items.children[0];
+      items.remove(old);
+      old.traverse(function (o) { if (o.isMesh) { if (window.gsap) gsap.killTweensOf(o.material); o.geometry.dispose(); } });
+      if (window.gsap) gsap.killTweensOf(old.position);
+    }
     p.build(items);
     items.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
     divider.material.opacity = p.half ? 0.28 : 0;

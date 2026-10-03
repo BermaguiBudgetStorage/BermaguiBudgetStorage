@@ -32,7 +32,10 @@
   if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
 
   // ----- renderer -----
-  var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  var renderer;
+  try {
+    renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  } catch (_) { docEl.classList.add("no3d"); return; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = T.PCFSoftShadowMap;
@@ -372,7 +375,7 @@
     camera.aspect = w / h; camera.updateProjectionMatrix();
   }
   resize();
-  window.addEventListener("resize", function () { resize(); if (hasGSAP) ScrollTrigger.refresh(); });
+  window.addEventListener("resize", resize);
 
   // ----- slow cinematic assembly -----
   var assembled = false;
@@ -485,6 +488,7 @@
       }
     }
   });
+  canvas.addEventListener("pointercancel", function (e) { up(e); downXY = null; });
   canvas.addEventListener("pointerleave", function () { targetTiltX = 0; targetTiltY = 0; });
   canvas.style.cursor = "grab";
   var ray = new T.Raycaster(), pointer = new T.Vector2();
@@ -527,7 +531,7 @@
   if (hasGSAP) {
     ScrollTrigger.create({ trigger: stage, start: "top top", end: "bottom bottom",
       scrub: 0.7, onUpdate: function (s) { scrollProg = s.progress; } });
-    gsap.to("#heroCopy", { opacity: 0, y: -24, ease: "none",
+    gsap.to("#heroCopy", { autoAlpha: 0, y: -24, ease: "none",
       scrollTrigger: { trigger: stage, start: "top top", end: "12% top", scrub: true } });
     gsap.to("#scrollCue", { opacity: 0, ease: "none",
       scrollTrigger: { trigger: stage, start: "top top", end: "8% top", scrub: true } });
@@ -552,7 +556,12 @@
   }
 
   // ----- render loop -----
+  var heroVisible = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (en) { heroVisible = en[0].isIntersecting; }).observe(stage);
+  }
   function tick() {
+    if (!heroVisible || document.hidden) { requestAnimationFrame(tick); return; }
     var now = performance.now(), idle = now - lastInteract > 2800;
     var p = scrollProg;
 
