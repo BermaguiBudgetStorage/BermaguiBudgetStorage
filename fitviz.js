@@ -327,7 +327,7 @@
   var PRESETS = {
     home: {
       verdict: "A 2-3 bedroom home fits the full 20ft, with room to walk in.",
-      tag: "Full 20ft · $250/mo", half: false,
+      tag: "Full 20ft · $240/mo", half: false,
       build: function (g) {
         g.add(boxRow(4, -2.55, -0.72, cardboardA, cardboardB));
         g.add(boxRow(4, -2.55, -0.72, cardboardB, cardboardA, 0.62));
@@ -349,12 +349,12 @@
     },
     car: {
       verdict: "A car drives straight in, with about 1.5 m spare in a full 20ft.",
-      tag: "Full 20ft · $250/mo", half: false,
+      tag: "Full 20ft · $240/mo", half: false,
       build: function (g) { g.add(car(-0.55)); }
     },
     boat: {
       verdict: "Trailer boats to ~5.5 m fit the full 20ft, motor and all.",
-      tag: "Full 20ft · $250/mo", half: false,
+      tag: "Full 20ft · $240/mo", half: false,
       build: function (g) { g.add(boat(0)); }
     },
     tools: {
